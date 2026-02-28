@@ -10,3 +10,15 @@ app.get("/health", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+import { extractSignals } from "./extractSignals.js";
+
+app.get("/analyze-test", (req, res) => {
+  const problem = `
+  Given an array of integers and an integer k,
+  find the maximum sum of a subarray of size k.
+  `;
+
+  const signals = extractSignals(problem);
+  res.json(signals);
+});
