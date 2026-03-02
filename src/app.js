@@ -1,5 +1,6 @@
 import { extractSignals } from "./extractSignals.js";
 import { scorePatterns } from "./patternScorer.js";
+import { buildDecision } from "./decisionEngine.js";
 
 import express from "express";
 
@@ -33,11 +34,21 @@ app.get("/analyze-test", (req, res) => {
   find the maximum sum of a subarray of size k.
   `;
 
-  const signals = extractSignals(problem);
-  const rankedPatterns = scorePatterns(signals);
+  // const signals = extractSignals(problem);
+  // const rankedPatterns = scorePatterns(signals);
 
-  res.json({
-    signals,
-    rankedPatterns
-  });
+//   res.json({
+//     signals,
+//     rankedPatterns
+//   });
+// });
+const signals = extractSignals(problem);
+const rankedPatterns = scorePatterns(signals);
+const decision = buildDecision(signals, rankedPatterns);
+
+res.json({
+  signals,
+  rankedPatterns,
+  decision
+});
 });
