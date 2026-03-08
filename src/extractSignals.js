@@ -24,7 +24,7 @@ export function extractSignals(problemText) {
     isSorted: false
   };
 
-  // Optimization keywords
+  
   const optimizationKeywords = [
     "maximum",
     "minimum",
@@ -43,7 +43,7 @@ export function extractSignals(problemText) {
     }
   }
 
-  // Search intent keywords
+
   const searchKeywords = [
     "find",
     "search",
@@ -59,7 +59,7 @@ export function extractSignals(problemText) {
     }
   }
 
-  // Contiguous detection
+  
   if (
     text.includes("subarray") ||
     text.includes("substring") ||
@@ -70,12 +70,12 @@ export function extractSignals(problemText) {
     signals.isContiguous = true;
   }
 
-  // Sorted detection
+  
   if (text.includes("sorted")) {
     signals.isSorted = true;
   }
 
-  // Two pointer hints
+  
   if (
     text.includes("merge") ||
     text.includes("pair") ||
