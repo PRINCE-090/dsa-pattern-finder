@@ -1,6 +1,9 @@
 export function buildDecision(signals, rankedPatterns) {
   if (!rankedPatterns || rankedPatterns.length === 0) {
-    return null;
+    return {
+      primaryPattern: "Unknown",
+      confidence: 0
+    };
   }
 
   const primary = rankedPatterns[0];
@@ -13,51 +16,62 @@ export function buildDecision(signals, rankedPatterns) {
   const confidence =
     totalScore === 0 ? 0 : Number((primary.score / totalScore).toFixed(2));
 
+ 
+  if (primary.score < 3) {
+    return {
+      primaryPattern: "Unknown",
+      confidence: 0,
+      message:
+        "No strong DSA pattern detected from the problem description."
+    };
+  }
+
   const why = [];
 
-
   if (signals.mentionsSubarray) {
-    why.push("Problem explicitly mentions subarray/substring.");
+    why.push("Problem mentions subarray/substring.");
   }
 
   if (signals.optimizationWords.length > 0) {
     why.push(
-      `Optimization required (${signals.optimizationWords.join(", ")}).`
+      `Optimization required (${signals.optimizationWords.join(", ")})`
     );
   }
 
   if (signals.mentionsK) {
-    why.push("Fixed size or constraint variable (k) detected.");
+    why.push("Fixed size constraint (k) detected.");
   }
 
-  if (signals.isContiguous) {
-    why.push("Contiguous segment implied.");
+  if (signals.isSorted) {
+    why.push("Problem involves sorted data.");
   }
 
-  
   const patternSteps = {
     "Sliding Window": [
-      "Initialize window boundaries.",
-      "Expand right pointer to include elements.",
-      "Shrink from left when constraint breaks.",
-      "Track best result during traversal."
+      "Initialize a window over the array.",
+      "Expand window using right pointer.",
+      "Shrink window from left when needed.",
+      "Track optimal result."
     ],
+
     "Two Pointers": [
       "Initialize two pointers.",
       "Move pointers based on condition.",
-      "Maintain required invariant.",
+      "Compare or merge elements.",
       "Stop when pointers cross."
     ],
+
     "Prefix Sum": [
       "Precompute cumulative sums.",
-      "Use prefix differences to compute range values.",
-      "Avoid recomputing subarray sums repeatedly."
+      "Use prefix difference for range queries.",
+      "Avoid recalculating sums repeatedly."
     ],
+
     "Binary Search": [
       "Identify monotonic condition.",
-      "Set low and high boundaries.",
-      "Check mid and adjust search space.",
-      "Repeat until convergence."
+      "Set low and high pointers.",
+      "Check mid element.",
+      "Reduce search space."
     ]
   };
 

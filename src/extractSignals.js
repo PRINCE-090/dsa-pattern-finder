@@ -9,14 +9,33 @@ export function extractSignals(problemText) {
     mentionsSubarray: text.includes("subarray"),
     mentionsSubstring: text.includes("substring"),
 
-    mentionsK: text.includes(" k") || text.includes("k "),
+    mentionsK:
+      text.includes(" k ") ||
+      text.includes("size k") ||
+      text.includes("length k"),
+
     mentionsWindow: text.includes("window"),
 
     optimizationWords: [],
-    isContiguous: false
+    searchWords: [],
+
+    twoPointerHints: false,
+    isContiguous: false,
+    isSorted: false
   };
 
-  const optimizationKeywords = ["maximum", "minimum", "longest", "shortest"];
+  // Optimization keywords
+  const optimizationKeywords = [
+    "maximum",
+    "minimum",
+    "largest",
+    "smallest",
+    "max",
+    "min",
+    "highest",
+    "lowest",
+    "best"
+  ];
 
   for (const word of optimizationKeywords) {
     if (text.includes(word)) {
@@ -24,8 +43,46 @@ export function extractSignals(problemText) {
     }
   }
 
-  if (signals.mentionsSubarray || signals.mentionsSubstring || signals.mentionsWindow) {
+  // Search intent keywords
+  const searchKeywords = [
+    "find",
+    "search",
+    "locate",
+    "position",
+    "index",
+    "target"
+  ];
+
+  for (const word of searchKeywords) {
+    if (text.includes(word)) {
+      signals.searchWords.push(word);
+    }
+  }
+
+  // Contiguous detection
+  if (
+    text.includes("subarray") ||
+    text.includes("substring") ||
+    text.includes("contiguous") ||
+    text.includes("segment") ||
+    text.includes("consecutive")
+  ) {
     signals.isContiguous = true;
+  }
+
+  // Sorted detection
+  if (text.includes("sorted")) {
+    signals.isSorted = true;
+  }
+
+  // Two pointer hints
+  if (
+    text.includes("merge") ||
+    text.includes("pair") ||
+    text.includes("two pointers") ||
+    text.includes("remove duplicates")
+  ) {
+    signals.twoPointerHints = true;
   }
 
   return signals;
