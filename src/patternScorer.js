@@ -9,7 +9,7 @@ export function scorePatterns(signals) {
   const getPattern = (name) =>
     scores.find((p) => p.pattern === name);
 
-  // Sliding Window
+  
   if (signals.mentionsSubarray) {
     getPattern("Sliding Window").score += 3;
   }
@@ -26,7 +26,7 @@ export function scorePatterns(signals) {
     getPattern("Sliding Window").score += 1;
   }
 
-  // Two Pointers
+ 
   if (signals.hasArray) {
     getPattern("Two Pointers").score += 2;
   }
@@ -39,7 +39,7 @@ export function scorePatterns(signals) {
     getPattern("Two Pointers").score += 3;
   }
 
-  // Prefix Sum
+  
   if (signals.mentionsSubarray) {
     getPattern("Prefix Sum").score += 3;
   }
@@ -48,7 +48,7 @@ export function scorePatterns(signals) {
     getPattern("Prefix Sum").score += 1;
   }
 
-  // Binary Search
+ 
   if (signals.isSorted && signals.searchWords.length > 0) {
     getPattern("Binary Search").score += 4;
   }
