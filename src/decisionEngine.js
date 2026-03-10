@@ -2,7 +2,8 @@ export function buildDecision(signals, rankedPatterns) {
   if (!rankedPatterns || rankedPatterns.length === 0) {
     return {
       primaryPattern: "Unknown",
-      confidence: 0
+      confidence: 0,
+      patternProbabilities: {}
     };
   }
 
@@ -16,11 +17,22 @@ export function buildDecision(signals, rankedPatterns) {
   const confidence =
     totalScore === 0 ? 0 : Number((primary.score / totalScore).toFixed(2));
 
- 
+  // 🔹 Pattern probability distribution
+  const patternProbabilities = {};
+
+  for (const p of rankedPatterns) {
+    patternProbabilities[p.pattern] =
+      totalScore === 0
+        ? 0
+        : Number((p.score / totalScore).toFixed(2));
+  }
+
+
   if (primary.score < 3) {
     return {
       primaryPattern: "Unknown",
       confidence: 0,
+      patternProbabilities,
       message:
         "No strong DSA pattern detected from the problem description."
     };
@@ -29,7 +41,7 @@ export function buildDecision(signals, rankedPatterns) {
   const why = [];
 
   if (signals.mentionsSubarray) {
-    why.push("Problem mentions subarray/substring.");
+    why.push("Problem mentions subarray or substring.");
   }
 
   if (signals.optimizationWords.length > 0) {
@@ -48,9 +60,9 @@ export function buildDecision(signals, rankedPatterns) {
 
   const patternSteps = {
     "Sliding Window": [
-      "Initialize a window over the array.",
-      "Expand window using right pointer.",
-      "Shrink window from left when needed.",
+      "Initialize window over the array.",
+      "Expand window with right pointer.",
+      "Shrink from left when needed.",
       "Track optimal result."
     ],
 
@@ -64,12 +76,12 @@ export function buildDecision(signals, rankedPatterns) {
     "Prefix Sum": [
       "Precompute cumulative sums.",
       "Use prefix difference for range queries.",
-      "Avoid recalculating sums repeatedly."
+      "Avoid recalculating sums."
     ],
 
     "Binary Search": [
       "Identify monotonic condition.",
-      "Set low and high pointers.",
+      "Set low and high boundaries.",
       "Check mid element.",
       "Reduce search space."
     ]
@@ -78,6 +90,7 @@ export function buildDecision(signals, rankedPatterns) {
   return {
     primaryPattern: primary.pattern,
     confidence,
+    patternProbabilities,
     why,
     thinkingSteps: patternSteps[primary.pattern] || []
   };
