@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/PRINCE-090/dsa-pattern-finder#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "node-fetch": "^3.3.2"
   }
 }

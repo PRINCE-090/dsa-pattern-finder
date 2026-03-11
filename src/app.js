@@ -2,6 +2,7 @@ import express from "express";
 import { extractSignals } from "./extractSignals.js";
 import { scorePatterns } from "./patternScorer.js";
 import { buildDecision } from "./decisionEngine.js";
+import { fetchProblemFromUrl } from "./fetchproblem.js";
 
 const app = express();
 const PORT = 3000;
@@ -31,29 +32,37 @@ app.get("/health", (req, res) => {
 });
 
 
-app.post("/analyze", (req, res) => {
-  const { problem } = req.body;
+app.post("/analyze", async (req, res) => {
+  let { problem, url } = req.body;
 
-  if (!problem || typeof problem !== "string" || problem.trim().length === 0) {
-    return res.status(400).json({
-      error: "Problem text cannot be empty"
-    });
-  }
-
-  const cleanedProblem = problem.trim();
-
-  const signals = extractSignals(cleanedProblem);
-  const rankedPatterns = scorePatterns(signals);
-  const decision = buildDecision(signals, rankedPatterns);
-
-  res.json({
-    input: cleanedProblem,
-    analysis: {
-      signals,
-      rankedPatterns,
-      decision
+  try {
+    if (url) {
+      problem = await fetchProblemFromUrl(url);
     }
-  });
+
+    if (!problem || typeof problem !== "string" || problem.trim().length === 0) {
+      return res.status(400).json({
+        error: "Problem text or URL required"
+      });
+    }
+
+    const cleanedProblem = problem.trim();
+
+    const signals = extractSignals(cleanedProblem);
+    const rankedPatterns = scorePatterns(signals);
+    const decision = buildDecision(signals, rankedPatterns);
+
+    res.json({
+      input: cleanedProblem.slice(0, 300),
+      analysis: {
+        signals,
+        rankedPatterns,
+        decision
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.listen(PORT, () => {
