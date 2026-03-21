@@ -2,12 +2,15 @@ import express from "express";
 import { extractSignals } from "./extractSignals.js";
 import { scorePatterns } from "./patternScorer.js";
 import { buildDecision } from "./decisionEngine.js";
-import { fetchProblemFromUrl } from "./fetchproblem.js";
+import { fetchProblemFromUrl } from "./fetchProblem.js";
+import cors from "cors";
+
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(cors());
 app.set("json spaces", 2);
 
 
@@ -30,6 +33,8 @@ app.get("/health", (req, res) => {
     service: "DSA Pattern Finder API"
   });
 });
+
+
 
 
 app.post("/analyze", async (req, res) => {

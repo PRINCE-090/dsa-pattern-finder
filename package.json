@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/PRINCE-090/dsa-pattern-finder#readme",
   "dependencies": {
+    "axios": "^1.13.6",
+    "cors": "^2.8.6",
     "express": "^5.2.1",
     "node-fetch": "^3.3.2"
   }
