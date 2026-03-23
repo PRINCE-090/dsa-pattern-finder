@@ -1,64 +1,53 @@
 export function scorePatterns(signals) {
-  const scores = [
+  const patterns = [
     { pattern: "Sliding Window", score: 0 },
     { pattern: "Two Pointers", score: 0 },
     { pattern: "Prefix Sum", score: 0 },
-    { pattern: "Binary Search", score: 0 }
+    { pattern: "Binary Search", score: 0 },
+    { pattern: "Dynamic Programming", score: 0 },
+    { pattern: "Graph", score: 0 },
+    { pattern: "Backtracking", score: 0 },
+    { pattern: "Greedy", score: 0 }
   ];
 
-  const getPattern = (name) =>
-    scores.find((p) => p.pattern === name);
+  const get = name => patterns.find(p => p.pattern === name);
 
-  
-  if (signals.mentionsSubarray) {
-    getPattern("Sliding Window").score += 3;
-  }
+  // 🔹 Sliding Window
+  if (signals.mentionsSubarray) get("Sliding Window").score += 3;
+  if (signals.mentionsK) get("Sliding Window").score += 2;
+  if (signals.optimizationWords.length) get("Sliding Window").score += 2;
+  if (signals.slidingWindowHints) get("Sliding Window").score += 2;
 
-  if (signals.optimizationWords.length > 0) {
-    getPattern("Sliding Window").score += 2;
-  }
+  // 🔹 Two Pointers
+  if (signals.hasArray) get("Two Pointers").score += 2;
+  if (signals.isSorted) get("Two Pointers").score += 2;
+  if (signals.twoPointerHints) get("Two Pointers").score += 3;
 
-  if (signals.mentionsK) {
-    getPattern("Sliding Window").score += 2;
-  }
+  // 🔹 Prefix Sum
+  if (signals.mentionsSubarray) get("Prefix Sum").score += 2;
+  if (signals.hasArray) get("Prefix Sum").score += 1;
 
-  if (signals.isContiguous) {
-    getPattern("Sliding Window").score += 1;
-  }
+  // 🔹 Binary Search
+  if (signals.isSorted && signals.searchWords.length)
+    get("Binary Search").score += 4;
 
- 
-  if (signals.hasArray) {
-    getPattern("Two Pointers").score += 2;
-  }
+  // 🔹 Dynamic Programming
+  if (signals.dpHints) get("Dynamic Programming").score += 4;
 
-  if (signals.isSorted) {
-    getPattern("Two Pointers").score += 2;
-  }
+  // 🔹 Graph
+  if (signals.graphHints) get("Graph").score += 4;
 
-  if (signals.twoPointerHints) {
-    getPattern("Two Pointers").score += 3;
-  }
+  // 🔹 Backtracking
+  if (signals.backtrackingHints) get("Backtracking").score += 4;
 
-  
-  if (signals.mentionsSubarray) {
-    getPattern("Prefix Sum").score += 3;
-  }
+  // 🔹 Greedy
+  if (signals.greedyHints) get("Greedy").score += 3;
 
-  if (signals.hasArray) {
-    getPattern("Prefix Sum").score += 1;
-  }
+  // 🔥 PENALTY LOGIC (important)
+  if (!signals.isSorted) get("Binary Search").score -= 2;
+  if (!signals.mentionsSubarray) get("Sliding Window").score -= 1;
 
- 
-  if (signals.isSorted && signals.searchWords.length > 0) {
-    getPattern("Binary Search").score += 4;
-  }
+  patterns.sort((a, b) => b.score - a.score);
 
-  if (signals.hasArray && signals.searchWords.length > 0) {
-    getPattern("Binary Search").score += 2;
-  }
-
-  // Sort by score
-  scores.sort((a, b) => b.score - a.score);
-
-  return scores;
+  return patterns;
 }

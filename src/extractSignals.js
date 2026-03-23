@@ -1,89 +1,63 @@
 export function extractSignals(problemText) {
   const text = problemText.toLowerCase();
 
-  const signals = {
+  return {
+    text,
+
     hasArray: text.includes("array"),
     hasString: text.includes("string"),
     hasMatrix: text.includes("matrix"),
+    isSorted: text.includes("sorted"),
 
     mentionsSubarray: text.includes("subarray"),
     mentionsSubstring: text.includes("substring"),
+    isContiguous:
+      text.includes("subarray") ||
+      text.includes("substring") ||
+      text.includes("contiguous"),
 
-    mentionsK:
-      text.includes(" k ") ||
-      text.includes("size k") ||
-      text.includes("length k"),
+    mentionsK: text.includes(" k") || text.includes("size k"),
 
-    mentionsWindow: text.includes("window"),
+    searchWords: ["find", "search", "locate", "target"].filter(w =>
+      text.includes(w)
+    ),
 
-    optimizationWords: [],
-    searchWords: [],
+    optimizationWords: [
+      "maximum",
+      "minimum",
+      "largest",
+      "smallest",
+      "best"
+    ].filter(w => text.includes(w)),
 
-    twoPointerHints: false,
-    isContiguous: false,
-    isSorted: false
+    twoPointerHints:
+      text.includes("pair") ||
+      text.includes("two pointers") ||
+      text.includes("merge"),
+
+    // 🔥 NEW SIGNALS
+    dpHints:
+      text.includes("subsequence") ||
+      text.includes("dp") ||
+      text.includes("optimal"),
+
+    graphHints:
+      text.includes("graph") ||
+      text.includes("node") ||
+      text.includes("edge"),
+
+    backtrackingHints:
+      text.includes("all combinations") ||
+      text.includes("permutation") ||
+      text.includes("generate"),
+
+    greedyHints:
+      text.includes("maximize") ||
+      text.includes("minimize") ||
+      text.includes("greedy"),
+
+    slidingWindowHints:
+      text.includes("window") ||
+      text.includes("fixed size")
   };
-
-  
-  const optimizationKeywords = [
-    "maximum",
-    "minimum",
-    "largest",
-    "smallest",
-    "max",
-    "min",
-    "highest",
-    "lowest",
-    "best"
-  ];
-
-  for (const word of optimizationKeywords) {
-    if (text.includes(word)) {
-      signals.optimizationWords.push(word);
-    }
-  }
-
-
-  const searchKeywords = [
-    "find",
-    "search",
-    "locate",
-    "position",
-    "index",
-    "target"
-  ];
-
-  for (const word of searchKeywords) {
-    if (text.includes(word)) {
-      signals.searchWords.push(word);
-    }
-  }
-
-  
-  if (
-    text.includes("subarray") ||
-    text.includes("substring") ||
-    text.includes("contiguous") ||
-    text.includes("segment") ||
-    text.includes("consecutive")
-  ) {
-    signals.isContiguous = true;
-  }
-
-  
-  if (text.includes("sorted")) {
-    signals.isSorted = true;
-  }
-
-  
-  if (
-    text.includes("merge") ||
-    text.includes("pair") ||
-    text.includes("two pointers") ||
-    text.includes("remove duplicates")
-  ) {
-    signals.twoPointerHints = true;
-  }
-
-  return signals;
 }

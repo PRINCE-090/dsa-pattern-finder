@@ -3,64 +3,155 @@ import axios from "axios";
 
 function App() {
   const [problem, setProblem] = useState("");
+  const [url, setUrl] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleAnalyze = async () => {
-    console.log("Button clicked");
+    if (!problem.trim() && !url.trim()) {
+      setError("Enter problem or paste URL");
+      return;
+    }
 
-    // Empty input check
-    if (!problem.trim()) {
-      setError("Please enter a problem");
+    if (url && !url.includes("leetcode.com")) {
+      setError("Enter valid LeetCode URL");
       return;
     }
 
     try {
       setError("");
+      setLoading(true);
 
       const res = await axios.post("http://localhost:3000/analyze", {
-        problem,
+        problem: problem.trim(),
+        url: url.trim(),
       });
-
-      console.log("Response:", res.data);
 
       setResult(res.data);
     } catch (err) {
-      console.error("Error:", err);
-
-      setError("Failed to analyze problem. Check backend.");
+      setError("Failed to analyze. Try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h1>DSA Pattern Finder</h1>
+  const styles = {
+    container: {
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #667eea, #764ba2)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: "40px",
+      fontFamily: "Segoe UI",
+      color: "#fff",
+    },
 
+    title: {
+      fontSize: "42px",
+      marginBottom: "25px",
+      fontWeight: "bold",
+    },
+
+    textarea: {
+      width: "520px",
+      padding: "14px",
+      borderRadius: "10px",
+      border: "none",
+      fontSize: "15px",
+      marginBottom: "10px",
+      outline: "none",
+    },
+
+    input: {
+      width: "520px",
+      padding: "12px",
+      borderRadius: "10px",
+      border: "none",
+      marginBottom: "10px",
+      outline: "none",
+    },
+
+    button: {
+      padding: "12px 25px",
+      background: "#ff7a18",
+      color: "#fff",
+      border: "none",
+      borderRadius: "8px",
+      cursor: "pointer",
+      fontWeight: "bold",
+      marginTop: "10px",
+    },
+
+    card: {
+      marginTop: "30px",
+      padding: "25px",
+      width: "450px",
+      background: "rgba(255,255,255,0.15)",
+      backdropFilter: "blur(10px)",
+      borderRadius: "15px",
+      boxShadow: "0 8px 25px rgba(0,0,0,0.2)",
+      color: "#fff",
+    },
+
+    pattern: {
+      color: "#00ffcc",
+      fontWeight: "bold",
+      fontSize: "18px",
+    },
+
+    row: {
+      display: "flex",
+      justifyContent: "space-between",
+      margin: "5px 0",
+    },
+  };
+
+  return (
+    <div style={styles.container}>
+      <h1 style={styles.title}>DSA Pattern Finder</h1>
+
+      {/* Problem Input */}
       <textarea
-        rows="6"
-        cols="70"
+        style={styles.textarea}
         placeholder="Enter DSA problem..."
         value={problem}
         onChange={(e) => setProblem(e.target.value)}
       />
 
-      <br /><br />
+      {/* URL Input */}
+      <input
+        type="text"
+        placeholder="Paste LeetCode URL"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        style={styles.input}
+      />
 
-      <button onClick={handleAnalyze}>Analyze</button>
+      <button
+        style={styles.button}
+        onClick={handleAnalyze}
+        disabled={loading}
+        onMouseOver={(e) => (e.target.style.opacity = 0.8)}
+        onMouseOut={(e) => (e.target.style.opacity = 1)}
+      >
+        {loading ? "Analyzing..." : "Analyze"}
+      </button>
 
-      {/* Error show */}
-      {error && (
-        <p style={{ color: "red", marginTop: "10px" }}>{error}</p>
-      )}
+      {error && <p style={{ color: "#ffb3b3" }}>{error}</p>}
 
-      {/* Result show */}
+      {loading && <p>Processing...</p>}
+
       {result && (
-        <div style={{ marginTop: "20px" }}>
+        <div style={styles.card}>
           <h2>Result</h2>
 
           <p>
             <b>Pattern:</b>{" "}
-            {result.analysis.decision.primaryPattern}
+            <span style={styles.pattern}>
+              {result.analysis.decision.primaryPattern}
+            </span>
           </p>
 
           <p>
@@ -68,15 +159,71 @@ function App() {
             {result.analysis.decision.confidence}
           </p>
 
-          {/* Optional: probabilities */}
-          <h3>Probabilities:</h3>
-          <pre>
-            {JSON.stringify(
-              result.analysis.decision.patternProbabilities,
-              null,
-              2
+          {/* Confidence Bar */}
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ height: "10px", background: "#ddd" }}>
+              <div
+                style={{
+                  width: `${
+                    result.analysis.decision.confidence * 100
+                  }%`,
+                  height: "100%",
+                  background: "#00ffcc",
+                }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Probabilities */}
+          <h3>Probabilities</h3>
+          {Object.entries(
+            result.analysis.decision.patternProbabilities
+          ).map(([pattern, value]) => (
+            <div key={pattern} style={{ marginBottom: "5px" }}>
+              <div style={styles.row}>
+                <span
+                  style={{
+                    color:
+                      pattern ===
+                      result.analysis.decision.primaryPattern
+                        ? "#00ffcc"
+                        : "#fff",
+                  }}
+                >
+                  {pattern}
+                </span>
+                <span>{value}</span>
+              </div>
+
+              <div style={{ height: "6px", background: "#ccc" }}>
+                <div
+                  style={{
+                    width: `${value * 100}%`,
+                    height: "100%",
+                    background: "#00ffcc",
+                  }}
+                ></div>
+              </div>
+            </div>
+          ))}
+
+          {/* WHY */}
+          <h3>Why this pattern?</h3>
+          <ul>
+            {result.analysis.decision.why?.map((r, i) => (
+              <li key={i}>{r}</li>
+            ))}
+          </ul>
+
+          {/* HOW */}
+          <h3>How to solve?</h3>
+          <ol>
+            {result.analysis.decision.thinkingSteps?.map(
+              (s, i) => (
+                <li key={i}>{s}</li>
+              )
             )}
-          </pre>
+          </ol>
         </div>
       )}
     </div>

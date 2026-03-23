@@ -1,97 +1,43 @@
 export function buildDecision(signals, rankedPatterns) {
-  if (!rankedPatterns || rankedPatterns.length === 0) {
-    return {
-      primaryPattern: "Unknown",
-      confidence: 0,
-      patternProbabilities: {}
-    };
-  }
-
   const primary = rankedPatterns[0];
 
-  const totalScore = rankedPatterns.reduce(
-    (sum, p) => sum + p.score,
-    0
-  );
+  const total = rankedPatterns.reduce((sum, p) => sum + p.score, 0);
 
-  const confidence =
-    totalScore === 0 ? 0 : Number((primary.score / totalScore).toFixed(2));
-
-  // 🔹 Pattern probability distribution
-  const patternProbabilities = {};
+  const probabilities = {};
 
   for (const p of rankedPatterns) {
-    patternProbabilities[p.pattern] =
-      totalScore === 0
-        ? 0
-        : Number((p.score / totalScore).toFixed(2));
+    probabilities[p.pattern] =
+      total === 0 ? 0 : Number((p.score / total).toFixed(2));
   }
 
+  const confidence =
+    total === 0 ? 0 : Number((primary.score / total).toFixed(2));
 
   if (primary.score < 3) {
     return {
       primaryPattern: "Unknown",
       confidence: 0,
-      patternProbabilities,
-      message:
-        "No strong DSA pattern detected from the problem description."
+      patternProbabilities: probabilities
     };
   }
-
-  const why = [];
-
-  if (signals.mentionsSubarray) {
-    why.push("Problem mentions subarray or substring.");
-  }
-
-  if (signals.optimizationWords.length > 0) {
-    why.push(
-      `Optimization required (${signals.optimizationWords.join(", ")})`
-    );
-  }
-
-  if (signals.mentionsK) {
-    why.push("Fixed size constraint (k) detected.");
-  }
-
-  if (signals.isSorted) {
-    why.push("Problem involves sorted data.");
-  }
-
-  const patternSteps = {
-    "Sliding Window": [
-      "Initialize window over the array.",
-      "Expand window with right pointer.",
-      "Shrink from left when needed.",
-      "Track optimal result."
-    ],
-
-    "Two Pointers": [
-      "Initialize two pointers.",
-      "Move pointers based on condition.",
-      "Compare or merge elements.",
-      "Stop when pointers cross."
-    ],
-
-    "Prefix Sum": [
-      "Precompute cumulative sums.",
-      "Use prefix difference for range queries.",
-      "Avoid recalculating sums."
-    ],
-
-    "Binary Search": [
-      "Identify monotonic condition.",
-      "Set low and high boundaries.",
-      "Check mid element.",
-      "Reduce search space."
-    ]
-  };
 
   return {
     primaryPattern: primary.pattern,
     confidence,
-    patternProbabilities,
-    why,
-    thinkingSteps: patternSteps[primary.pattern] || []
+    patternProbabilities: probabilities,
+    why: [
+      signals.mentionsSubarray && "Subarray detected",
+      signals.isSorted && "Sorted data detected",
+      signals.optimizationWords.length && "Optimization required",
+      signals.dpHints && "DP-like structure detected",
+      signals.graphHints && "Graph terms detected"
+    ].filter(Boolean),
+
+    thinkingSteps: [
+      "Understand problem constraints",
+      "Identify pattern type",
+      "Apply optimized approach",
+      "Test edge cases"
+    ]
   };
 }
