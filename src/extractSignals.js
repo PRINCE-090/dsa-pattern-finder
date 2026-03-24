@@ -1,63 +1,51 @@
 export function extractSignals(problemText) {
+
   const text = problemText.toLowerCase();
 
   return {
     text,
 
-    hasArray: text.includes("array"),
-    hasString: text.includes("string"),
-    hasMatrix: text.includes("matrix"),
-    isSorted: text.includes("sorted"),
+    hasArray: text.includes("array") || text.includes("nums"),
 
-    mentionsSubarray: text.includes("subarray"),
-    mentionsSubstring: text.includes("substring"),
-    isContiguous:
+    mentionsSubarray:
       text.includes("subarray") ||
       text.includes("substring") ||
       text.includes("contiguous"),
 
-    mentionsK: text.includes(" k") || text.includes("size k"),
+    mentionsK:
+      text.includes(" k") ||
+      text.includes("size k"),
 
-    searchWords: ["find", "search", "locate", "target"].filter(w =>
-      text.includes(w)
-    ),
+    isSorted: text.includes("sorted"),
 
     optimizationWords: [
       "maximum",
       "minimum",
       "largest",
-      "smallest",
-      "best"
+      "smallest"
     ].filter(w => text.includes(w)),
 
+    // 🔥 IMPORTANT (3sum fix)
     twoPointerHints:
       text.includes("pair") ||
-      text.includes("two pointers") ||
-      text.includes("merge"),
-
-    // 🔥 NEW SIGNALS
-    dpHints:
-      text.includes("subsequence") ||
-      text.includes("dp") ||
-      text.includes("optimal"),
-
-    graphHints:
-      text.includes("graph") ||
-      text.includes("node") ||
-      text.includes("edge"),
-
-    backtrackingHints:
-      text.includes("all combinations") ||
-      text.includes("permutation") ||
-      text.includes("generate"),
-
-    greedyHints:
-      text.includes("maximize") ||
-      text.includes("minimize") ||
-      text.includes("greedy"),
+      text.includes("pairs") ||
+      text.includes("triplet") ||
+      text.includes("triplets") ||
+      text.includes("sum") ||
+      text.includes("target") ||
+      text.includes("three") ||
+      text.includes("two pointers"),
 
     slidingWindowHints:
       text.includes("window") ||
-      text.includes("fixed size")
+      text.includes("fixed size"),
+
+    dpHints:
+      text.includes("subsequence") ||
+      text.includes("dp"),
+
+    graphHints:
+      text.includes("graph") ||
+      text.includes("node")
   };
 }

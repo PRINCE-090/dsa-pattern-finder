@@ -62,6 +62,7 @@ function App() {
       fontSize: "15px",
       marginBottom: "10px",
       outline: "none",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
     },
 
     input: {
@@ -71,6 +72,7 @@ function App() {
       border: "none",
       marginBottom: "10px",
       outline: "none",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
     },
 
     button: {
@@ -82,6 +84,7 @@ function App() {
       cursor: "pointer",
       fontWeight: "bold",
       marginTop: "10px",
+      transition: "0.2s",
     },
 
     card: {
@@ -98,7 +101,7 @@ function App() {
     pattern: {
       color: "#00ffcc",
       fontWeight: "bold",
-      fontSize: "18px",
+      fontSize: "20px",
     },
 
     row: {
@@ -112,7 +115,6 @@ function App() {
     <div style={styles.container}>
       <h1 style={styles.title}>DSA Pattern Finder</h1>
 
-      {/* Problem Input */}
       <textarea
         style={styles.textarea}
         placeholder="Enter DSA problem..."
@@ -120,7 +122,6 @@ function App() {
         onChange={(e) => setProblem(e.target.value)}
       />
 
-      {/* URL Input */}
       <input
         type="text"
         placeholder="Paste LeetCode URL"
@@ -135,6 +136,8 @@ function App() {
         disabled={loading}
         onMouseOver={(e) => (e.target.style.opacity = 0.8)}
         onMouseOut={(e) => (e.target.style.opacity = 1)}
+        onMouseDown={(e) => (e.target.style.transform = "scale(0.95)")}
+        onMouseUp={(e) => (e.target.style.transform = "scale(1)")}
       >
         {loading ? "Analyzing..." : "Analyze"}
       </button>
@@ -145,8 +148,10 @@ function App() {
 
       {result && (
         <div style={styles.card}>
-          <h2>Result</h2>
+          <h2 style={{ marginBottom: "10px" }}>Analysis Result</h2>
+          <hr style={{ marginBottom: "15px", opacity: 0.3 }} />
 
+          {/* Pattern */}
           <p>
             <b>Pattern:</b>{" "}
             <span style={styles.pattern}>
@@ -154,32 +159,32 @@ function App() {
             </span>
           </p>
 
+          {/* Confidence */}
           <p>
             <b>Confidence:</b>{" "}
             {result.analysis.decision.confidence}
           </p>
 
           {/* Confidence Bar */}
-          <div style={{ marginBottom: "10px" }}>
-            <div style={{ height: "10px", background: "#ddd" }}>
+          <div style={{ marginBottom: "15px" }}>
+            <div style={{ height: "10px", background: "#ddd", borderRadius: "5px" }}>
               <div
                 style={{
-                  width: `${
-                    result.analysis.decision.confidence * 100
-                  }%`,
+                  width: `${result.analysis.decision.confidence * 100}%`,
                   height: "100%",
                   background: "#00ffcc",
+                  borderRadius: "5px",
                 }}
               ></div>
             </div>
           </div>
 
           {/* Probabilities */}
-          <h3>Probabilities</h3>
+          <h3 style={{ marginTop: "20px" }}>Probabilities</h3>
           {Object.entries(
             result.analysis.decision.patternProbabilities
           ).map(([pattern, value]) => (
-            <div key={pattern} style={{ marginBottom: "5px" }}>
+            <div key={pattern} style={{ marginBottom: "6px" }}>
               <div style={styles.row}>
                 <span
                   style={{
@@ -208,21 +213,19 @@ function App() {
           ))}
 
           {/* WHY */}
-          <h3>Why this pattern?</h3>
+          <h3 style={{ marginTop: "20px" }}>Why this pattern?</h3>
           <ul>
             {result.analysis.decision.why?.map((r, i) => (
-              <li key={i}>{r}</li>
+              <li key={i}>• {r}</li>
             ))}
           </ul>
 
           {/* HOW */}
-          <h3>How to solve?</h3>
+          <h3 style={{ marginTop: "20px" }}>How to solve?</h3>
           <ol>
-            {result.analysis.decision.thinkingSteps?.map(
-              (s, i) => (
-                <li key={i}>{s}</li>
-              )
-            )}
+            {result.analysis.decision.thinkingSteps?.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
           </ol>
         </div>
       )}
