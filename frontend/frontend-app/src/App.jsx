@@ -23,7 +23,7 @@ function App() {
       setError("");
       setLoading(true);
 
-      const res = await axios.post("http://localhost:3000/analyze", {
+      const res = await axios.post("https://dsa-pattern-backend.onrender.com/analyze", {
         problem: problem.trim(),
         url: url.trim(),
       });
